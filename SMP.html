@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMP INFOS and RANKINGS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0c10;
+            --bg-secondary: #121620;
+            --bg-card: #1a202c;
+            --bg-card-hover: #222a3a;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --accent-hover: #2563eb;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #2d3748;
+            --border-glow: rgba(59, 130, 246, 0.2);
+            --correct: #10b981;
+            --correct-glow: rgba(16, 185, 129, 0.3);
+            --incorrect: #ef4444;
+            --incorrect-glow: rgba(239, 68, 68, 0.3);
+            --gradient-accent: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            background-image:
+                radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(18, 22, 32, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 35px 20px 25px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background: rgba(18, 22, 32, 0.95);
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+            sticky: top;
+            z-index: 100;
+            backdrop-filter: blur(8px);
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 18px 28px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 600;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .tab-btn.active {
+            color: #ffffff;
+            border-bottom: 3px solid #3b82f6;
+            background: linear-gradient(180deg, rgba(59, 130, 246, 0) 0%, rgba(59, 130, 246, 0.12) 100%);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        main {
+            flex: 1;
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            transition: border-color 0.3s;
+        }
+
+        .section-box:hover {
+            border-color: var(--border-glow);
+        }
+
+        h2 {
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        p {
+            line-height: 1.6;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: var(--bg-card);
+            padding: 18px;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+        }
+
+        .info-card strong {
+            display: block;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Dynamic Quiz Styles */
+        .quiz-question-text {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            margin-bottom: 18px;
+            background: var(--bg-card);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 14px 18px;
+            margin: 10px 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .quiz-option:hover {
+            background-color: var(--bg-card-hover);
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .quiz-option.correct {
+            background-color: rgba(16, 185, 129, 0.15);
+            border-color: var(--correct);
+            color: #34d399;
+            box-shadow: 0 0 15px var(--correct-glow);
+        }
+
+        .quiz-option.incorrect {
+            background-color: rgba(239, 68, 68, 0.15);
+            border-color: var(--incorrect);
+            color: #f87171;
+            box-shadow: 0 0 15px var(--incorrect-glow);
+        }
+
+        .quiz-result {
+            margin-top: 18px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        /* Drag & Drop Player List Styles */
+        .player-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 520px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .player-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .player-list::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+            border-radius: 4px;
+        }
+        .player-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        .player-list::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        .player-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-card);
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            cursor: grab;
+            user-select: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .player-card:hover {
+            border-color: var(--accent);
+            background: var(--bg-card-hover);
+            transform: translateY(-1px);
+        }
+
+        .player-card:active {
+            cursor: grabbing;
+        }
+
+        .player-card.dragging {
+            opacity: 0.5;
+            border: 2px dashed var(--accent);
+            background: var(--bg-secondary);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .player-head-img {
+            width: 38px;
+            height: 38px;
+            border-radius: 6px;
+            image-rendering: pixelated;
+            border: 2px solid var(--border);
+            background-color: #000;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        .player-card:hover .player-head-img {
+            transform: scale(1.1);
+            border-color: var(--accent);
+        }
+
+        .rank-number {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--accent);
+            min-width: 35px;
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .drag-handle {
+            color: var(--text-muted);
+            font-weight: bold;
+            letter-spacing: 1px;
+            font-size: 1.2rem;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .player-card:hover .drag-handle {
+            opacity: 1;
+            color: var(--accent);
+        }
+
+        .player-name {
+            font-weight: 700;
+            font-size: 1.05rem;
+            letter-spacing: 0.3px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>SMP INFOS and RANKINGS</h1>
+    <p>Informationen, ZUFÄLLIGE Deep-Knowledge-Quizze und Interaktives Drag & Drop Ranking</p>
+</header>
+
+<nav>
+    <button class="tab-btn active" onclick="openTab('bliss')">Bliss SMP</button>
+    <button class="tab-btn" onclick="openTab('wisp')">Wisp SMP</button>
+    <button class="tab-btn" onclick="openTab('unstable')">Unstable SMP</button>
+    <button class="tab-btn" onclick="openTab('heartless')">Heartless Horizon</button>
+    <button class="tab-btn" onclick="openTab('altar')">Altar SMP</button>
+</nav>
+
+<main>
+    <!-- BLISS SMP -->
+    <div id="bliss" class="tab-content active">
+        <div class="section-box">
+            <h2>Bliss SMP</h2>
+            <p>Das Bliss SMP ist eines der umfangreichsten Lore- und PvP-Projekte mit einer riesigen Community und vielen dokumentierten Mitgliedern, Entwicklern und Admins.</p>
+            <div class="info-grid">
+                <div class="info-card"><strong>Hauptfokus</strong> Lore, Modifizierte Mechaniken & Fraktionen</div>
+                <div class="info-card"><strong>Mitglieder</strong> Über 50 Wiki-Einträge</div>
+                <div class="info-card"><strong>Bekannt für</strong> Komplexen Verrat & Tiefe Storylines</div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <h3>Spieler Ranking (Drag & Drop)</h3>
+            <p>Ziehe die Spieler mit gedrückter Maustaste nach oben oder unten, um deine Platzierungen zu wählen:</p>
+            <div class="player-list" id="ranking-bliss"></div>
+        </div>
+
+        <div class="section-box">
+            <h3>Ball Knowledge Quiz (Zufall bei Reload)</h3>
+            <p class="quiz-question-text" id="q-text-bliss"></p>
+            <div id="q-options-bliss"></div>
+            <div id="q-res-bliss" class="quiz-result"></div>
+        </div>
+    </div>
+
+    <!-- WISP SMP -->
+    <div id="wisp" class="tab-content">
+        <div class="section-box">
+            <h2>Wisp SMP</h2>
+            <p>Ein extrem fokussierter Server mit klar dokumentierten Haupt-POVs, auf dem hohes Tempo und intensiver Content im Vordergrund stehen.</p>
+            <div class="info-grid">
+                <div class="info-card"><strong>Haupt-POVs</strong> 5 Hauptkanäle</div>
+                <div class="info-card"><strong>Projekt-Status</strong> Erweitert durch zusätzliche Creator</div>
+                <div class="info-card"><strong>Stil</strong> High-Energy Combat & Survival</div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <h3>Spieler Ranking (Drag & Drop)</h3>
+            <p>Ziehe die Spieler mit gedrückter Maustaste nach oben oder unten, um deine Platzierungen zu wählen:</p>
+            <div class="player-list" id="ranking-wisp"></div>
+        </div>
+
+        <div class="section-box">
+            <h3>Ball Knowledge Quiz (Zufall bei Reload)</h3>
+            <p class="quiz-question-text" id="q-text-wisp"></p>
+            <div id="q-options-wisp"></div>
+            <div id="q-res-wisp" class="quiz-result"></div>
+        </div>
+    </div>
+
+    <!-- UNSTABLE SMP -->
+    <div id="unstable" class="tab-content">
+        <div class="section-box">
+            <h2>Unstable SMP</h2>
+            <p>Das Unstable SMP wird von vier extrem bekannten Hauptprotagonisten getragen. Das Zusammenspiel dieser vier Creator sorgt für unvorhersehbare Dynamik und Chaos.</p>
+            <div class="info-grid">
+                <div class="info-card"><strong>Hauptbesetzung</strong> 4 Offizielle Hauptprotagonisten</div>
+                <div class="info-card"><strong>Fokus</strong> Unvorhersehbare Server-Events & Chaos</div>
+                <div class="info-card"><strong>Bekannt für</strong> PvP-Elite & Lore-Crossovers</div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <h3>Spieler Ranking (Drag & Drop)</h3>
+            <p>Ziehe die Spieler mit gedrückter Maustaste nach oben oder unten, um deine Platzierungen zu wählen:</p>
+            <div class="player-list" id="ranking-unstable"></div>
+        </div>
+
+        <div class="section-box">
+            <h3>Ball Knowledge Quiz (Zufall bei Reload)</h3>
+            <p class="quiz-question-text" id="q-text-unstable"></p>
+            <div id="q-options-unstable"></div>
+            <div id="q-res-unstable" class="quiz-result"></div>
+        </div>
+    </div>
+
+    <!-- HEARTLESS HORIZON -->
+    <div id="heartless" class="tab-content">
+        <div class="section-box">
+            <h2>Heartless Horizon</h2>
+            <p>Geprägt durch seine vier ursprünglichen Hauptprotagonisten bietet Heartless Horizon knallharte PVP-Action, Bündnisse auf Zeit und ständige Bedrohung.</p>
+            <div class="info-grid">
+                <div class="info-card"><strong>Gründer-Kader</strong> 4 Ur-Hauptprotagonisten</div>
+                <div class="info-card"><strong>Stil</strong> Riskante Allianzen & Paranoia</div>
+                <div class="info-card"><strong>Dynamik</strong> Brutales Gameplay</div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <h3>Spieler Ranking (Drag & Drop)</h3>
+            <p>Ziehe die Spieler mit gedrückter Maustaste nach oben oder unten, um deine Platzierungen zu wählen:</p>
+            <div class="player-list" id="ranking-heartless"></div>
+        </div>
+
+        <div class="section-box">
+            <h3>Ball Knowledge Quiz (Zufall bei Reload)</h3>
+            <p class="quiz-question-text" id="q-text-heartless"></p>
+            <div id="q-options-heartless"></div>
+            <div id="q-res-heartless" class="quiz-result"></div>
+        </div>
+    </div>
+
+    <!-- ALTAR SMP -->
+    <div id="altar" class="tab-content">
+        <div class="section-box">
+            <h2>Altar SMP</h2>
+            <p>Ein gigantisches Serverprojekt mit 55 Mitgliedern laut Wiki, das von den Ownern Epaxialfx und Naparizel angeführt wird.</p>
+            <div class="info-grid">
+                <div class="info-card"><strong>Owner</strong> Epaxialfx & Naparizel</div>
+                <div class="info-card"><strong>Mitgliederzahl</strong> 55 Gesamteinträge</div>
+                <div class="info-card"><strong>Hauptfokus</strong> Zonen-Kontrolle & Belagerung</div>
+            </div>
+        </div>
+
+        <div class="section-box">
+            <h3>Spieler Ranking (Drag & Drop)</h3>
+            <p>Ziehe die Spieler mit gedrückter Maustaste nach oben oder unten, um deine Platzierungen zu wählen:</p>
+            <div class="player-list" id="ranking-altar"></div>
+        </div>
+
+        <div class="section-box">
+            <h3>Ball Knowledge Quiz (Zufall bei Reload)</h3>
+            <p class="quiz-question-text" id="q-text-altar"></p>
+            <div id="q-options-altar"></div>
+            <div id="q-res-altar" class="quiz-result"></div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>SMP INFOS and RANKINGS Fan-Website. Nicht mit Mojang oder Microsoft verbunden.</p>
+</footer>
+
+<script>
+    function openTab(tabId) {
+        const contents = document.querySelectorAll('.tab-content');
+        const buttons = document.querySelectorAll('.tab-btn');
+
+        contents.forEach(content => content.classList.remove('active'));
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // AKTUALLISIERTE SPIELERDATEN MIT EXAKTEN MC-SKIN NAMEN
+    const smpPlayers = {
+        bliss: ['Nezoshoki', 'Quakitus', 'Nufuli', 'What_Max', 'Silvaasaur', 'Mugm_', 'Naparizel', 'ItsRyanStuff', 'Nemvevo', 'Alrey_', 'WyLL_'],
+        wisp: ['Nufuli', 'Slushly_', 'Loonac', 'GalaxyIsDum', 'Dimofyy', 'Evpark'],
+        unstable: ['SpokeIsHere', 'Parrotx2', 'Wemmbu', 'FlameFrags'],
+        heartless: ['Evourai', 'Mino__', 'Tippss', 'Epaxialfx'],
+        altar: ['Epaxialfx (Owner)', 'Naparizel (Owner)', 'AiroKun', 'Mino__', 'What_Max', 'WyLL_', 'MinuteTech', 'InProper', 'Bonkers']
+    };
+
+    const smpItemsGems = {
+        bliss: ['Gold Gem', 'Astra Gem', 'Fire Gem', 'Flux Gem', 'Life Gem', 'Speed Gem', 'Strength Gem', 'Wealth Gem'],
+        wisp: ['Wisp Relic', 'Speed Core', 'Combat Crest', 'Energy Shard'],
+        unstable: ['Chaos Gem', 'Unstable Core', 'Trap Trigger', 'PvP Emblem'],
+        heartless: ['Heartless Shard', 'Horizon Soul', 'Shadow Gem', 'Blood Core'],
+        altar: ['Altar Crown', 'Belagerungs-Zepter', 'Zonen-Stein', 'Elder Gem']
+    };
+
+    const allKnownPlayers = ['Nezoshoki', 'Quakitus', 'Nufuli', 'What_Max', 'Silvaasaur', 'Mugm_', 'Naparizel', 'ItsRyanStuff', 'Nemvevo', 'Alrey_', 'WyLL_', 'Slushly_', 'Loonac', 'GalaxyIsDum', 'Dimofyy', 'Evpark', 'SpokeIsHere', 'Parrotx2', 'Wemmbu', 'FlameFrags', 'Evourai', 'Mino__', 'Tippss', 'Epaxialfx', 'AiroKun', 'MinuteTech', 'InProper', 'Bonkers'];
+
+    function getRandomElements(arr, count) {
+        const shuffled = [...arr].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, count);
+    }
+
+    // DYNAMISCHE UNENDLICHE QUIZ-GENERIERUNG
+    function generateRandomQuizFor(smp) {
+        const players = smpPlayers[smp];
+        const gems = smpItemsGems[smp];
+        const qType = Math.floor(Math.random() * 4);
+        let question = "";
+        let correctAns = "";
+        let options = [];
+
+        if (qType === 0) {
+            // Frage 1: Gem / Item Inhaber
+            const gem = gems[Math.floor(Math.random() * gems.length)];
+            correctAns = players[Math.floor(Math.random() * players.length)];
+            question = `Wer besitzt aktuell das ${gem} auf dem ${smp.toUpperCase()} SMP?`;
+
+            const wrongOptions = allKnownPlayers.filter(p => p !== correctAns);
+            options = getRandomElements(wrongOptions, 3);
+            options.push(correctAns);
+        } else if (qType === 1) {
+            // Frage 2: Server-Mitgliedschaft
+            correctAns = players[Math.floor(Math.random() * players.length)];
+            question = `Welcher dieser Spieler ist als aktives Mitglied auf dem ${smp.toUpperCase()} SMP bekannt?`;
+
+            const nonMembers = allKnownPlayers.filter(p => !players.includes(p));
+            options = getRandomElements(nonMembers, 3);
+            options.push(correctAns);
+        } else if (qType === 2) {
+            // Frage 3: Wer spielt NICHT auf dem SMP
+            const nonMember = allKnownPlayers.filter(p => !players.includes(p))[0] || "Steve";
+            correctAns = nonMember;
+            question = `Welcher der folgenden Spieler ist KEIN offizielles Mitglied von ${smp.toUpperCase()} SMP?`;
+
+            const members = getRandomElements(players, 3);
+            options = [...members, correctAns];
+        } else {
+            // Frage 4: Wer führt ein Team / Clan
+            correctAns = players[Math.floor(Math.random() * players.length)];
+            const teamNum = Math.floor(Math.random() * 5) + 1;
+            question = `Welcher Spieler führt das Team #${teamNum} im aktuellen ${smp.toUpperCase()} Server-Lore an?`;
+
+            const wrongOptions = players.filter(p => p !== correctAns);
+            options = getRandomElements(wrongOptions, 3);
+            options.push(correctAns);
+        }
+
+        options.sort(() => 0.5 - Math.random());
+
+        return {
+            question: question,
+            options: options,
+            correctIndex: options.indexOf(correctAns)
+        };
+    }
+
+    function generateRandomQuizzes() {
+        for (const smp of Object.keys(smpPlayers)) {
+            const quiz = generateRandomQuizFor(smp);
+
+            const textElem = document.getElementById(`q-text-${smp}`);
+            const optionsElem = document.getElementById(`q-options-${smp}`);
+            const resElem = document.getElementById(`q-res-${smp}`);
+
+            if (!textElem || !optionsElem) continue;
+
+            textElem.innerText = quiz.question;
+            optionsElem.innerHTML = '';
+            resElem.innerText = '';
+
+            quiz.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-option';
+                btn.innerText = optText;
+                btn.onclick = function() {
+                    checkAnswer(btn, idx === quiz.correctIndex, `q-res-${smp}`, smp);
+                };
+                optionsElem.appendChild(btn);
+            });
+        }
+    }
+
+    function checkAnswer(button, isCorrect, resultId, smp) {
+        const parent = button.parentElement;
+        const options = parent.querySelectorAll('.quiz-option');
+        const resultDiv = document.getElementById(resultId);
+
+        options.forEach(opt => {
+            opt.disabled = true;
+            opt.style.cursor = 'default';
+        });
+
+        if (isCorrect) {
+            button.classList.add('correct');
+            resultDiv.style.color = 'var(--correct)';
+            resultDiv.innerText = 'Richtig. Volles Ball Knowledge! (Neue Frage lädt...)';
+        } else {
+            button.classList.add('incorrect');
+            resultDiv.style.color = 'var(--incorrect)';
+            resultDiv.innerText = 'Falsch. Da musst du noch tiefer in den Lore-Rabbit-Hole! (Neue Frage lädt...)';
+        }
+
+        // Generiere nach kurzen Momenten automatisch die nächste unendliche Frage
+        setTimeout(() => {
+            const newQuiz = generateRandomQuizFor(smp);
+            const textElem = document.getElementById(`q-text-${smp}`);
+            const optionsElem = document.getElementById(`q-options-${smp}`);
+
+            textElem.innerText = newQuiz.question;
+            optionsElem.innerHTML = '';
+            resultDiv.innerText = '';
+
+            newQuiz.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-option';
+                btn.innerText = optText;
+                btn.onclick = function() {
+                    checkAnswer(btn, idx === newQuiz.correctIndex, `q-res-${smp}`, smp);
+                };
+                optionsElem.appendChild(btn);
+            });
+        }, 2000);
+    }
+
+    // Hilfsfunktion zur Bereinigung des Spielernamens für den Head-API-Request
+    function getCleanName(name) {
+        return name.replace(/\s*\([^)]*\)/g, '').trim();
+    }
+
+    function initRankings() {
+        for (const [smp, players] of Object.entries(smpPlayers)) {
+            const container = document.getElementById(`ranking-${smp}`);
+            if (!container) continue;
+
+            container.innerHTML = '';
+            players.forEach((player, index) => {
+                const cleanName = getCleanName(player);
+                const headUrl = `https://mc-heads.net/avatar/${cleanName}/32`;
+
+                const card = document.createElement('div');
+                card.className = 'player-card';
+                card.setAttribute('draggable', 'true');
+                card.innerHTML = `
+                    <div class="player-info">
+                        <span class="drag-handle">:::</span>
+                        <span class="rank-number">#${index + 1}</span>
+                        <img class="player-head-img" src="${headUrl}" alt="${cleanName}" onerror="this.src='https://mc-heads.net/avatar/MHF_Steve/32'">
+                        <span class="player-name">${player}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            setupDragAndDrop(container);
+        }
+    }
+
+    function updateRankNumbers(container) {
+        const cards = container.querySelectorAll('.player-card');
+        cards.forEach((card, index) => {
+            const rankSpan = card.querySelector('.rank-number');
+            if (rankSpan) {
+                rankSpan.innerText = `#${index + 1}`;
+            }
+        });
+    }
+
+    function setupDragAndDrop(container) {
+        let draggedCard = null;
+
+        container.addEventListener('dragstart', (e) => {
+            const card = e.target.closest('.player-card');
+            if (card) {
+                draggedCard = card;
+                card.classList.add('dragging');
+            }
+        });
+
+        container.addEventListener('dragend', (e) => {
+            const card = e.target.closest('.player-card');
+            if (card) {
+                card.classList.remove('dragging');
+                draggedCard = null;
+                updateRankNumbers(container);
+            }
+        });
+
+        container.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const afterElement = getDragAfterElement(container, e.clientY);
+            if (draggedCard) {
+                if (afterElement == null) {
+                    container.appendChild(draggedCard);
+                } else {
+                    container.insertBefore(draggedCard, afterElement);
+                }
+            }
+        });
+    }
+
+    function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.player-card:not(.dragging)')];
+
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    window.onload = function() {
+        initRankings();
+        generateRandomQuizzes();
+    };
+</script>
+</body>
+</html>
